@@ -23,8 +23,10 @@ const filteredDuties = computed(() => {
   );
 });
 
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD ?? '123';
+
 const authenticate = () => {
-  if (password.value === '123') {
+  if (password.value === ADMIN_PASSWORD) {
     isAuthenticated.value = true;
     errorMsg.value = '';
   } else {

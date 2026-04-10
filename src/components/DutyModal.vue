@@ -86,24 +86,30 @@ const close = () => {
   emit('close');
 };
 
+const onKeydown = (e) => {
+  if (e.key === 'Escape') close();
+};
+
 onMounted(() => {
   document.body.style.overflow = 'hidden';
+  window.addEventListener('keydown', onKeydown);
 });
 
 onUnmounted(() => {
   document.body.style.overflow = '';
+  window.removeEventListener('keydown', onKeydown);
 });
 
 const getExpansionColor = (id) => {
   const colors = {
-    0: '#4a90e2', // ARR
-    1: '#9b59b6', // HW
-    2: '#e74c3c', // SB
-    3: '#f1c40f', // ShB
-    4: '#3498db', // EW
-    5: '#e67e22', // DT
+    0: 'var(--exp-arr)',
+    1: 'var(--exp-hw)',
+    2: 'var(--exp-sb)',
+    3: 'var(--exp-shb)',
+    4: 'var(--exp-ew)',
+    5: 'var(--exp-dt)',
   };
-  return colors[id] || '#ffffff';
+  return colors[id] || 'var(--text-primary)';
 };
 
 const getQuestIcon = (type) => {
