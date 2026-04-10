@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useStorage } from '@vueuse/core';
 import ExpansionSection from '../components/ExpansionSection.vue';
 import DutyModal from '../components/DutyModal.vue';
@@ -36,6 +36,13 @@ const selectedTypeId = ref(null);
 const selectedExpansionId = ref(null);
 const selectedDutyModal = ref(null);
 const settingsOpen = ref(false);
+const showScrollTop = ref(false);
+
+const onScroll = () => { showScrollTop.value = window.scrollY > 400; };
+const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+onMounted(() => window.addEventListener('scroll', onScroll));
+onUnmounted(() => window.removeEventListener('scroll', onScroll));
 
 const resetProgress = () => {
   if (confirm('Réinitialiser toute la progression ? Cette action est irréversible.')) {
@@ -184,11 +191,19 @@ const expansions = computed(() => {
     <p>Aucune mission trouvée pour ces critères.</p>
   </div>
   
-  <DutyModal 
-    v-if="selectedDutyModal" 
-    :duty="selectedDutyModal" 
-    @close="selectedDutyModal = null" 
+  <DutyModal
+    v-if="selectedDutyModal"
+    :duty="selectedDutyModal"
+    @close="selectedDutyModal = null"
   />
+
+  <Transition name="fade">
+    <button v-if="showScrollTop" class="scroll-top-btn" @click="scrollTop" title="Retour en haut">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </button>
+  </Transition>
 </template>
 
 <style scoped>
@@ -259,6 +274,30 @@ const expansions = computed(() => {
 
 .settings-item.danger:hover {
   background: rgba(255, 107, 107, 0.1);
+}
+
+.scroll-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  border: none;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(91, 179, 255, 0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  z-index: 50;
+}
+
+.scroll-top-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(91, 179, 255, 0.6);
 }
 
 .progress-bar-container {
