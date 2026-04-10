@@ -63,6 +63,16 @@ const saveDuties = async () => {
   }
 };
 
+const prerequisTypes = [
+  { value: 'main_scenario',  label: 'Scénario principal' },
+  { value: 'side_quest',     label: 'Quête secondaire' },
+];
+
+const recompenseTypes = [
+  { value: 'Carte de Triple Triade',   label: 'Carte de Triple Triade' },
+  { value: 'Rouleau pour orchestrion', label: 'Rouleau pour orchestrion' },
+];
+
 const editingDuty = ref(null);
 const editingJsonStr = ref('');
 const jsonError = ref('');
@@ -236,8 +246,55 @@ const goHome = () => {
                 <textarea v-model="editingDuty.description" class="form-textarea" rows="5"></textarea>
               </div>
 
-              <div class="form-notice">
-                <p>Note : Pour éditer les tableaux complexes (bosses, prerequis), veuillez utiliser l'onglet "Vue JSON".</p>
+              <!-- Prérequis -->
+              <div class="form-group">
+                <label>Prérequis</label>
+                <div class="array-list">
+                  <div v-for="(prereq, i) in (editingDuty.prerequis || [])" :key="i" class="array-item">
+                    <div class="array-item-fields">
+                      <input type="text" v-model="prereq.name" placeholder="Nom de la quête" />
+                      <select v-model="prereq.type">
+                        <option v-for="opt in prerequisTypes" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                      </select>
+                      <input type="text" v-model="prereq.PNJ" placeholder="PNJ" />
+                      <input type="text" v-model="prereq.location" placeholder="Lieu (ex: Limsa X:11.6 Y:11.1)" />
+                    </div>
+                    <button class="remove-btn" @click="editingDuty.prerequis.splice(i, 1)">✕</button>
+                  </div>
+                  <button class="add-btn" @click="editingDuty.prerequis = [...(editingDuty.prerequis || []), { name: '', type: 'main_scenario', PNJ: '', location: '' }]">
+                    + Ajouter un prérequis
+                  </button>
+                </div>
+              </div>
+
+              <!-- Bosses & Récompenses -->
+              <div class="form-group">
+                <label>Bosses & Récompenses</label>
+                <div class="array-list">
+                  <div v-for="(boss, bi) in (editingDuty.bosses || [])" :key="bi" class="boss-item">
+                    <div class="boss-header">
+                      <input type="text" v-model="boss.name" placeholder="Nom du boss" class="boss-name-input" />
+                      <button class="remove-btn" @click="editingDuty.bosses.splice(bi, 1)">✕</button>
+                    </div>
+                    <div class="recompenses-list">
+                      <div v-for="(recompense, ri) in (boss.recompenses || [])" :key="ri" class="array-item">
+                        <div class="array-item-fields">
+                          <input type="text" v-model="recompense.name" placeholder="Nom de la récompense" />
+                          <select v-model="recompense.type">
+                            <option v-for="opt in recompenseTypes" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                          </select>
+                        </div>
+                        <button class="remove-btn" @click="boss.recompenses.splice(ri, 1)">✕</button>
+                      </div>
+                      <button class="add-btn add-btn-sm" @click="boss.recompenses = [...(boss.recompenses || []), { name: '', type: 'Carte de Triple Triade' }]">
+                        + Récompense
+                      </button>
+                    </div>
+                  </div>
+                  <button class="add-btn" @click="editingDuty.bosses = [...(editingDuty.bosses || []), { name: '' }]">
+                    + Ajouter un boss
+                  </button>
+                </div>
               </div>
 
               <button @click="applyForm" class="apply-btn">Appliquer les modifications (Formulaire)</button>
@@ -618,5 +675,115 @@ const goHome = () => {
   border-radius: 8px;
   margin-bottom: 1.5rem;
   font-weight: 500;
+}
+
+.array-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.array-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 0.6rem;
+}
+
+.array-item-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.array-item-fields input,
+.array-item-fields select {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.25);
+  color: white;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.array-item-fields select option {
+  background: #1f2b3e;
+}
+
+.remove-btn {
+  background: rgba(255, 107, 107, 0.2);
+  border: none;
+  color: #ff6b6b;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.remove-btn:hover {
+  background: rgba(255, 107, 107, 0.4);
+}
+
+.add-btn {
+  background: rgba(81, 207, 102, 0.1);
+  border: 1px dashed rgba(81, 207, 102, 0.4);
+  color: #51cf66;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.add-btn:hover {
+  background: rgba(81, 207, 102, 0.2);
+}
+
+.boss-item {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.boss-header {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.boss-name-input {
+  flex: 1;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.recompenses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding-left: 1rem;
+  border-left: 2px solid rgba(255, 255, 255, 0.08);
+}
+
+.add-btn-sm {
+  font-size: 0.82rem;
+  padding: 0.35rem 0.7rem;
 }
 </style>

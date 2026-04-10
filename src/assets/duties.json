@@ -30,10 +30,16 @@
         "name": "Denn dent-d'orque",
         "recompenses": [
           {
-            "name": "Carte Sahuagin"
+            "name": "Carte Sahuagin",
+            "type": "Carte de Triple Triade"
           },
           {
-            "name": "Rouleau \"From the Depths\""
+            "name": "Rouleau \"From the Depths\"",
+            "type": "Rouleau pour orchestrion"
+          },
+          {
+            "name": "OVerAngelix",
+            "type": "Carte de Triple Triade"
           }
         ]
       }
