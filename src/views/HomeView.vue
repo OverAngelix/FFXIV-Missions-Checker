@@ -44,6 +44,10 @@ const toggleExpansion = (id) => {
   selectedExpansionId.value = selectedExpansionId.value === id ? null : id;
 };
 
+const totalDuties = computed(() => dutiesData.length);
+const completedCount = computed(() => Object.keys(completedDuties.value).length);
+const progressPercent = computed(() => Math.round((completedCount.value / totalDuties.value) * 100));
+
 // Group duties by expansion -> difficulty
 const expansions = computed(() => {
   const groups = {};
@@ -102,11 +106,10 @@ const expansions = computed(() => {
 <template>
   <div class="header">
     <div class="header-content">
-      <h1>Contenus d'Éorzéa</h1>
+      <h2>Une collection complète de vos missions classées par extension</h2>
     </div>
-    <p>Une collection complète de vos missions classées par extension.</p>
   </div>
-  
+
   <div class="filters-container">
     <div class="tabs primary-tabs">
       <button 
@@ -131,6 +134,15 @@ const expansions = computed(() => {
       >
         {{ exp.name }}
       </button>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar-header">
+        <span>{{ completedCount }} / {{ totalDuties }} ({{ progressPercent }}%)</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" :style="{ width: progressPercent + '%' }"></div>
+      </div>
     </div>
   </div>
   
@@ -161,7 +173,33 @@ const expansions = computed(() => {
 <style scoped>
 .header-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+}
+
+.progress-bar-container {
+  margin: 1rem 2rem;
+}
+
+.progress-bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  opacity: 0.8;
+}
+
+.progress-bar-track {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--exp-arr), var(--exp-dt));
+  border-radius: 99px;
+  transition: width 0.4s ease;
 }
 </style>
